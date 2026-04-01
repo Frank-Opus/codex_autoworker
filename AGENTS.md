@@ -17,6 +17,12 @@ Primary platform surfaces:
 - `scripts/` for migration helpers, validators, and recovery logic
 - optional `.codex-plugin/plugin.json` for installable packaging once stable
 
+Primary workflow entry points:
+- `$autoworker` for the full auto-loop on non-trivial tasks
+- `$deep-plan` when planning should happen explicitly before execution
+- `$subtask-init` when a written plan already exists and execution should start now
+- `$dispatch` when resuming an active `subtask_*.md`
+
 Useful tools:
 - `rg` for fast repo discovery
 - `git` for atomic planning and implementation commits
@@ -38,6 +44,10 @@ Layer the repository like this:
 4. Optional plugin packaging lives separately so distribution does not distort repo-native dogfooding
 
 Avoid frontmatter-compatibility assumptions. Map each Claude-specific feature to a real Codex mechanism or explicitly remove it.
+
+Repo-native validation commands:
+- `./scripts/verify-hooks.sh` checks repo-local hook wiring and nested-directory path safety
+- `./scripts/verify-codex-workspace.sh` performs a real `codex exec` visibility check against `AGENTS.md` and `.agents/skills/`
 
 ## GSD Workflow Enforcement
 

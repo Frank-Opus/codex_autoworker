@@ -9,8 +9,8 @@ Requirements for the initial Codex CLI release. Each requirement maps to exactly
 
 ### Project Surface
 
-- [ ] **SURF-01**: Repo root contains an `AGENTS.md` that explains the Codex-first project purpose, workflow entry points, and execution rules
-- [ ] **SURF-02**: The repo exposes Codex-discoverable Autoworker skills from a runnable location without requiring manual copying by the user
+- [x] **SURF-01**: Repo root contains an `AGENTS.md` that explains the Codex-first project purpose, workflow entry points, and execution rules
+- [x] **SURF-02**: The repo exposes Codex-discoverable Autoworker skills from a runnable location without requiring manual copying by the user
 - [ ] **SURF-03**: The primary user documentation explains Codex-native installation/invocation and no longer depends on Claude-only commands for the happy path
 
 ### Workflow Semantics
@@ -21,9 +21,9 @@ Requirements for the initial Codex CLI release. Each requirement maps to exactly
 
 ### Hook and Script Integration
 
-- [ ] **HOOK-01**: Each Claude-specific lifecycle hook or reminder is either mapped to a Codex-native mechanism or explicitly replaced with a documented fallback
-- [ ] **HOOK-02**: Hook or fallback behavior works from the repository root and from nested working directories without path breakage
-- [ ] **HOOK-03**: Repo scripts used by the Codex workflow have a documented contract, invocation path, and verification method
+- [x] **HOOK-01**: Each Claude-specific lifecycle hook or reminder is either mapped to a Codex-native mechanism or explicitly replaced with a documented fallback
+- [x] **HOOK-02**: Hook or fallback behavior works from the repository root and from nested working directories without path breakage
+- [x] **HOOK-03**: Repo scripts used by the Codex workflow have a documented contract, invocation path, and verification method
 
 ### Verification and Migration Safety
 
@@ -33,7 +33,7 @@ Requirements for the initial Codex CLI release. Each requirement maps to exactly
 
 ### Distribution
 
-- [ ] **DIST-01**: The repo can be used directly as a Codex workspace without plugin packaging
+- [x] **DIST-01**: The repo can be used directly as a Codex workspace without plugin packaging
 - [ ] **DIST-02**: If plugin packaging is included in v1, it uses a valid Codex plugin manifest and installable layout that points at the migrated workflow assets
 
 ## v2 Requirements
@@ -63,12 +63,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | VERF-01 | Phase 1 | Complete |
-| SURF-01 | Phase 2 | Pending |
-| SURF-02 | Phase 2 | Pending |
-| HOOK-01 | Phase 2 | Pending |
-| HOOK-02 | Phase 2 | Pending |
-| HOOK-03 | Phase 2 | Pending |
-| DIST-01 | Phase 2 | Pending |
+| SURF-01 | Phase 2 | Complete |
+| SURF-02 | Phase 2 | Complete |
+| HOOK-01 | Phase 2 | Complete |
+| HOOK-02 | Phase 2 | Complete |
+| HOOK-03 | Phase 2 | Complete |
+| DIST-01 | Phase 2 | Complete |
 | FLOW-01 | Phase 3 | Pending |
 | FLOW-02 | Phase 3 | Pending |
 | FLOW-03 | Phase 3 | Pending |
@@ -84,4 +84,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-01*
-*Last updated: 2026-04-01 after initial definition*
+*Last updated: 2026-04-01 after Phase 2 Codex-native surfaces completion*
