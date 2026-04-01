@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/session_start_context.py\"",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/session_start_context.py\"",
             "statusMessage": "Loading Autoworker session context",
             "timeout": 15
           }
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/stop_persist_state.py\"",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/stop_persist_state.py\"",
             "statusMessage": "Checking Autoworker persistence",
             "timeout": 15
           }
