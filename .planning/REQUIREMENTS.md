@@ -27,7 +27,7 @@ Requirements for the initial Codex CLI release. Each requirement maps to exactly
 
 ### Verification and Migration Safety
 
-- [ ] **VERF-01**: The migration includes a compatibility matrix documenting how each current Claude-specific capability translates to Codex CLI
+- [x] **VERF-01**: The migration includes a compatibility matrix documenting how each current Claude-specific capability translates to Codex CLI
 - [ ] **VERF-02**: The migrated workflow is exercised end-to-end inside Codex CLI with evidence for planning, execution, testing/gating, and recovery behavior
 - [ ] **VERF-03**: The repository includes migration notes that clearly separate preserved behavior, changed behavior, and deferred behavior
 
@@ -62,7 +62,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| VERF-01 | Phase 1 | Pending |
+| VERF-01 | Phase 1 | Complete |
 | SURF-01 | Phase 2 | Pending |
 | SURF-02 | Phase 2 | Pending |
 | HOOK-01 | Phase 2 | Pending |

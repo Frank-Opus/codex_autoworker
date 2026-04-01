@@ -12,7 +12,7 @@ This roadmap ports the existing Autoworker repository from a Claude Code-first w
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Migration Contract** - Define the compatibility matrix, target architecture, and non-negotiable workflow invariants
+- [x] **Phase 1: Migration Contract** - Define the compatibility matrix, target architecture, and non-negotiable workflow invariants (completed 2026-04-01)
 - [ ] **Phase 2: Codex-Native Surfaces** - Land AGENTS, Codex skill layout, hook/fallback scaffolding, and direct-workspace usability
 - [ ] **Phase 3: Workflow Parity Verification** - Prove the Autoworker loop still behaves correctly inside Codex CLI
 - [ ] **Phase 4: Packaging and Docs Polish** - Finalize docs, migration notes, and optional plugin distribution assets
@@ -30,9 +30,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Audit current Claude-specific touchpoints and write compatibility matrix
-- [ ] 01-02: Decide repo layout and migration boundaries for skills, hooks, and docs
-- [ ] 01-03: Define preserved workflow invariants and verification contract
+- [x] 01-01: Audit current Claude-specific touchpoints and write compatibility matrix
+- [x] 01-02: Decide repo layout and migration boundaries for skills, hooks, and docs
+- [x] 01-03: Define preserved workflow invariants and verification contract
 
 ### Phase 2: Codex-Native Surfaces
 **Goal**: Make the repository usable as a Codex workspace with repo-level guidance, discoverable skills, and working recovery/hook scaffolding.
@@ -91,7 +91,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Migration Contract | 0/3 | Not started | - |
+| 1. Migration Contract | 3/3 | Complete   | 2026-04-01 |
 | 2. Codex-Native Surfaces | 0/4 | Not started | - |
 | 3. Workflow Parity Verification | 0/4 | Not started | - |
 | 4. Packaging and Docs Polish | 0/3 | Not started | - |
