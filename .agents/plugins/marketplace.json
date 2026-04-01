@@ -1,0 +1,20 @@
+{
+  "name": "autoworker-local",
+  "interface": {
+    "displayName": "Autoworker Local Plugins"
+  },
+  "plugins": [
+    {
+      "name": "autoworker-codex",
+      "source": {
+        "source": "local",
+        "path": "./plugins/autoworker-codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

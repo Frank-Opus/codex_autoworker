@@ -1,0 +1,37 @@
+{
+  "name": "autoworker-codex",
+  "version": "0.1.0",
+  "description": "Codex-first Autoworker workflow with evidence-based execution gates.",
+  "author": {
+    "name": "phj128",
+    "url": "https://github.com/phj128"
+  },
+  "homepage": "https://github.com/phj128/autoworker",
+  "repository": "https://github.com/phj128/autoworker",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "workflow",
+    "verification",
+    "automation"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Autoworker for Codex CLI",
+    "shortDescription": "Evidence-first coding workflow for Codex.",
+    "longDescription": "Runs the Autoworker plan -> dispatch -> code/test -> gate loop as a Codex-first workflow package.",
+    "developerName": "phj128",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/phj128/autoworker",
+    "defaultPrompt": [
+      "Use $autoworker to finish this feature with real verification.",
+      "Use $deep-plan, then start execution from task_plan.md.",
+      "Resume the active subtask with $dispatch."
+    ],
+    "brandColor": "#1E6F5C"
+  }
+}

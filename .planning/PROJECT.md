@@ -16,13 +16,13 @@ A Codex CLI user can invoke Autoworker and trust that the workflow advances only
 
 - ✓ Existing Autoworker documents a Claude Code-first state-machine workflow with planning, gated execution, testing layers, and anti-loss scripts — existing repo baseline
 - ✓ Existing Autoworker already stores core behavior in skill documents and helper scripts, making the logic portable rather than hard-coded into one app runtime — existing repo baseline
+- ✓ The repo now exposes a Codex-first runtime surface through `AGENTS.md`, `.agents/skills/`, repo-local hooks, and Codex-native docs — validated by Phases 2 and 4
+- ✓ The migrated workflow has parity evidence for planning, execution, gating, and resume semantics inside Codex CLI — validated by Phase 3
+- ✓ Optional repo-local plugin packaging exists without replacing the canonical repo-native authoring surface — validated by Phase 4
 
 ### Active
 
-- [ ] Reframe the repo as a Codex CLI-first workflow package without losing the current quality-gate loop semantics
-- [ ] Replace Claude-specific assumptions, commands, and lifecycle hooks with Codex-compatible equivalents
-- [ ] Make installation, invocation, repo layout, and user docs unambiguous for Codex CLI users
-- [ ] Preserve resumability, verification discipline, and operator trust during long-running autonomous work
+None. The milestone goals for the Codex-first migration are complete.
 
 ### Out of Scope
 
@@ -48,9 +48,10 @@ A Codex CLI user can invoke Autoworker and trust that the workflow advances only
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Make Codex CLI the primary target instead of maintaining dual-primary docs from day one | Clear guidance is more important than short-term cross-tool ambiguity | — Pending |
-| Keep the existing state-machine and quality-gate concepts as the product core | The value of the repo is the loop discipline, not the Claude-specific surface area | — Pending |
-| Treat hooks, skills, packaging, and documentation as first-class migration workstreams | Most breakage risk is in workflow plumbing, not business logic | — Pending |
+| Make Codex CLI the primary target instead of maintaining dual-primary docs from day one | Clear guidance is more important than short-term cross-tool ambiguity | Complete |
+| Keep the existing state-machine and quality-gate concepts as the product core | The value of the repo is the loop discipline, not the Claude-specific surface area | Complete |
+| Treat hooks, skills, packaging, and documentation as first-class migration workstreams | Most breakage risk is in workflow plumbing, not business logic | Complete |
+| Keep `.agents/skills/` canonical and treat packaged plugin assets as a synced snapshot | Prevent distribution artifacts from becoming the authoring source of truth | Complete |
 
 ## Evolution
 
@@ -70,4 +71,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-01 after initialization*
+*Last updated: 2026-04-01 after Codex-first migration milestone completion*

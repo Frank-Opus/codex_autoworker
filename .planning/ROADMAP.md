@@ -14,8 +14,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Migration Contract** - Define the compatibility matrix, target architecture, and non-negotiable workflow invariants (completed 2026-04-01)
 - [x] **Phase 2: Codex-Native Surfaces** - Land AGENTS, Codex skill layout, hook/fallback scaffolding, and direct-workspace usability (completed 2026-04-01)
-- [ ] **Phase 3: Workflow Parity Verification** - Prove the Autoworker loop still behaves correctly inside Codex CLI
-- [ ] **Phase 4: Packaging and Docs Polish** - Finalize docs, migration notes, and optional plugin distribution assets
+- [x] **Phase 3: Workflow Parity Verification** - Prove the Autoworker loop still behaves correctly inside Codex CLI (completed 2026-04-01)
+- [x] **Phase 4: Packaging and Docs Polish** - Finalize docs, migration notes, and optional plugin distribution assets (completed 2026-04-01)
 
 ## Phase Details
 
@@ -64,10 +64,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 03-01: Build Codex-native execution test fixture or harness
-- [ ] 03-02: Exercise planning, dispatch, and verification path end-to-end
-- [ ] 03-03: Exercise failure/retry/recovery path end-to-end
-- [ ] 03-04: Capture parity evidence and fix any workflow regressions
+- [x] 03-01: Build Codex-native execution test fixture or harness
+- [x] 03-02: Exercise planning, dispatch, and verification path end-to-end
+- [x] 03-03: Exercise failure/retry/recovery path end-to-end
+- [x] 03-04: Capture parity evidence and fix any workflow regressions
 
 ### Phase 4: Packaging and Docs Polish
 **Goal**: Publish a clean Codex-first user experience with migration notes and optional plugin packaging.
@@ -80,9 +80,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Rewrite README and supporting docs for Codex-first usage
-- [ ] 04-02: Add explicit migration notes and compatibility guidance
-- [ ] 04-03: Add and validate optional plugin packaging assets
+- [x] 04-01: Rewrite README and supporting docs for Codex-first usage
+- [x] 04-02: Add explicit migration notes and compatibility guidance
+- [x] 04-03: Add and validate optional plugin packaging assets
 
 ## Progress
 
@@ -93,5 +93,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Migration Contract | 3/3 | Complete   | 2026-04-01 |
 | 2. Codex-Native Surfaces | 4/4 | Complete | 2026-04-01 |
-| 3. Workflow Parity Verification | 0/4 | Not started | - |
-| 4. Packaging and Docs Polish | 0/3 | Not started | - |
+| 3. Workflow Parity Verification | 4/4 | Complete | 2026-04-01 |
+| 4. Packaging and Docs Polish | 3/3 | Complete | 2026-04-01 |

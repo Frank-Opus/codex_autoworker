@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A Codex CLI user can invoke Autoworker and trust that the workflow advances only with real execution evidence, never with hand-wavy "done" claims.
-**Current focus:** Phase 3 - Workflow Parity Verification
+**Current focus:** Milestone complete - Codex-first repo, parity proof, and optional packaging are in place
 
 ## Current Position
 
-Phase: 3 of 4 (Workflow Parity Verification)
-Plan: 0 of 4 in current phase
-Status: Ready to plan
-Last activity: 2026-04-01 — Phase 2 Codex-native surfaces completed; Phase 3 ready to start
+Phase: 4 of 4 (Packaging and Docs Polish)
+Plan: 3 of 3 in current phase
+Status: Milestone complete
+Last activity: 2026-04-01 — Phase 4 packaging/docs polish completed; milestone ready for handoff
 
-Progress: [#####-----] 50%
+Progress: [##########] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 7 min
-- Total execution time: 0.8 hours
+- Total plans completed: 14
+- Average duration: 8 min
+- Total execution time: 2.0 hours
 
 **By Phase:**
 
@@ -29,6 +29,8 @@ Progress: [#####-----] 50%
 |-------|-------|-------|----------|
 | 1 | 3 | 15 min | 5 min |
 | 2 | 4 | 40 min | 10 min |
+| 3 | 4 | 36 min | 9 min |
+| 4 | 3 | 28 min | 9 min |
 
 **Recent Trend:**
 - Last 5 plans: 5, 8, 10, 12, 10
@@ -48,15 +50,15 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+None. The milestone scope is complete.
 
 ### Blockers/Concerns
 
-- Hook behavior must be validated on the exact Codex environments targeted by the repo
-- Phase 3 must prove that the migrated skills preserve the intended evidence/gate loop, not just the file layout
+- Provider-side rate limits can temporarily slow full replay of the parity harness because it uses multiple real `codex exec` sessions
+- Plugin packaging is intentionally a synced snapshot; `.agents/skills/` remains the canonical authoring surface
 
 ## Session Continuity
 
-Last session: 2026-04-01 02:30
-Stopped at: Phase 2 complete; Phase 3 ready for workflow parity verification
+Last session: 2026-04-01 14:40
+Stopped at: Milestone complete after Phases 3 and 4
 Resume file: None
