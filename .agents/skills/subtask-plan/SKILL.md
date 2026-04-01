@@ -59,6 +59,15 @@ Read the subtask's "Acceptance Criteria" table, for each metric ask:
 
 Cross-reference the traceability table, Edit subtask to fill in each layer's verification plan:
 
+Use these exact section headings so downstream validators and workflow tools can find them reliably:
+- `### Upstream Verification Traceability`
+- `### L1 Build`
+- `### L2 Unit`
+- `### L3 Chain`
+- `### L4 End-to-End`
+- `### Verification Coverage`
+- `### Acceptance Criteria Coverage Check`
+
 **L1 Build**:
 - Specific build/check commands → expected output
 
@@ -76,6 +85,16 @@ Cross-reference the traceability table, Edit subtask to fill in each layer's ver
 | Modified file | Change content | Corresponding verification item |
 Each file planned for modification must have a corresponding verification item.
 
+For routing compatibility, also add checkbox-backed verification items under each L1-L4 subsection, for example:
+- [ ] L1.1: ...
+- [ ] L2.1: ...
+
+For routing compatibility, normalize the `## Plan` section into checkbox-backed steps as well:
+- [ ] Step 1.1: ...
+- [ ] Step 1.2: ...
+
+Do not leave the plan as plain bullets once this step is complete.
+
 **Constraints**:
 - Cannot be lower than upstream requirements in the traceability table. Downgrades must be explicitly noted in the delta rationale column
 - Each metric in the acceptance criteria table must have at least one corresponding test in L2-L4
@@ -89,6 +108,8 @@ Build metric-to-test mapping table:
 
 - Uncovered metrics found → return to Step 3 and add corresponding tests
 - All covered → continue
+
+Write this table under the exact heading `### Acceptance Criteria Coverage Check`.
 
 ### 5. Solution Self-Check (Four Questions)
 

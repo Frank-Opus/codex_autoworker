@@ -52,10 +52,16 @@ Invoke immediately after entering Plan Mode. Ensures discussion depth through 5 
    - "Can this assumption be verified? With what command?"
    - "Is there anything you consider 'obviously true' but haven't actually confirmed?"
 
+   Verification-method guidance:
+   - Prefer executable commands over static inspection when the assumption is about current behavior, runtime output, or test coverage.
+   - Use source inspection as supplementary evidence or when no meaningful runtime check exists.
+   - Example: if the assumption is "the named greeting path already works", prefer `python3 test_app.py` or an equivalent runnable command over only `sed -n ...`.
+
 3. **Explore code** (Glob/Grep/Read):
    - When assumptions involve existing code, actually read the code to confirm — don't rely on memory
+   - When using search commands as evidence, prefer source-focused queries that exclude generated workflow artifacts such as `task_plan.md`, `subtask_*.md`, `*.log`, and archived notes unless those files are the thing being verified
 
-**Depth gate**: Each assumption either has a verification method (one-line command) or is flagged as risk ("cannot pre-verify, monitor during execution").
+**Depth gate**: Each assumption either has a verification method (one-line command) or is flagged as risk ("cannot pre-verify, monitor during execution"). For behavior-affecting work, at least one assumption verification method should exercise the current runtime path rather than only reading files.
 
 ---
 

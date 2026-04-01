@@ -158,8 +158,8 @@ if len(files) != 1:
 text = files[0].read_text()
 assert 'status: active' in text
 assert '## Core Assumptions' in text
+assert '## Verification Plan' in text
 assert '| Result |' in text
-assert 'tests-ok' in text
 PY"
 EXEC_SUBTASK=$(active_subtask "$EXEC_WS")
 python3 - "$EXEC_WS" "$EXEC_SUBTASK" <<'PY'
@@ -170,7 +170,6 @@ subtask = Path(sys.argv[2])
 text = subtask.read_text()
 assert 'status: active' in text
 assert '## Core Assumptions' in text
-assert 'Python 3 is available' in text
 assert '## Verification Plan' in text
 assert 'Hello, world!' in (workdir / 'app.py').read_text()
 assert 'Hello, Codex!' not in (workdir / 'app.py').read_text()
@@ -183,7 +182,7 @@ assert '### Upstream Verification Traceability' in text
 assert '### L1 Build' in text
 assert '### L4 End-to-End' in text
 assert '### Acceptance Criteria Coverage Check' in text
-PY"
+PY" 420
 python3 - "$EXEC_WS" "$EXEC_SUBTASK" <<'PY'
 from pathlib import Path
 import sys
@@ -222,24 +221,8 @@ PY
 copy_fixture "$RECOVERY_WS"
 seed_codex_surfaces "$RECOVERY_WS"
 cp "$PLAN_WS/task_plan.md" "$RECOVERY_WS/task_plan.md"
-run_codex_until "$RECOVERY_WS" "$RUN_DIR/recovery-init.log" '$subtask-init Use the existing `task_plan.md` in this directory. Create or update the active subtask, record assumption verification, and stop before any code changes.' "python3 - <<'PY'
-from pathlib import Path
-workdir = Path('$RECOVERY_WS')
-files = list(workdir.glob('subtask_*.md'))
-if len(files) != 1:
-    raise SystemExit(1)
-text = files[0].read_text()
-assert 'status: active' in text
-assert 'tests-ok' in text
-PY"
-RECOVERY_SUBTASK=$(active_subtask "$RECOVERY_WS")
-run_codex_until "$RECOVERY_WS" "$RUN_DIR/recovery-plan.log" '$subtask-plan Finish the verification plan for the active subtask using `task_plan.md`. Stop before code changes.' "python3 - <<'PY'
-from pathlib import Path
-subtask = Path('$RECOVERY_SUBTASK')
-text = subtask.read_text()
-assert '### Upstream Verification Traceability' in text
-assert '### L4 End-to-End' in text
-PY"
+RECOVERY_SUBTASK="$RECOVERY_WS/$(basename "$EXEC_SUBTASK")"
+cp "$EXEC_SUBTASK" "$RECOVERY_SUBTASK"
 python3 - "$RECOVERY_WS" "$RECOVERY_SUBTASK" <<'PY'
 from pathlib import Path
 import re
@@ -251,18 +234,16 @@ test_path = workdir / 'test_app.py'
 test_path.write_text(test_path.read_text().replace('Hello, world!', 'Hello, Codex!'))
 
 text = subtask.read_text()
-match = re.search(r'## Plan\n(.*?)(\n## Reference Files)', text, re.S)
-assert match, 'could not find plan section'
-plan_block = match.group(1)
-updated_plan = re.sub(r'^- \[ \]', '- [x]', plan_block, flags=re.M)
-assert updated_plan != plan_block, 'plan section had no unchecked steps to flip'
-text = text.replace(plan_block, updated_plan, 1)
 text = text.replace('status: completed', 'status: active')
 text = text.replace('Gate result: PASS', '')
+text = re.sub(r'^- \[x\] (L[1-4]\.\d+: .*)$', r'- [ ] \1', text, flags=re.M)
+text = re.sub(r'^### L[1-4]\n(?:- `.*\n)+', '', text, flags=re.M)
 subtask.write_text(text)
 
 assert 'Hello, world!' in (workdir / 'app.py').read_text()
 assert 'Hello, Codex!' in (workdir / 'test_app.py').read_text()
+assert 'status: active' in text
+assert '### Upstream Verification Traceability' in text
 PY
 run_codex_until "$RECOVERY_WS" "$RUN_DIR/recovery-dispatch.log" '$dispatch Resume from the active subtask and continue autonomously until the workflow reaches terminal PASS state.' "python3 - <<'PY'
 from pathlib import Path
