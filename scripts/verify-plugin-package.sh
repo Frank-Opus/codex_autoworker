@@ -19,7 +19,10 @@ from pathlib import Path
 manifest = json.loads(Path(sys.argv[1]).read_text())
 marketplace = json.loads(Path(sys.argv[2]).read_text())
 assert manifest["name"] == "autoworker-codex"
+assert manifest["version"] == "0.2.0"
 assert manifest["skills"] == "./skills/"
+assert manifest["homepage"] == "https://github.com/Frank-Opus/codex_autoworker"
+assert manifest["repository"] == "https://github.com/Frank-Opus/codex_autoworker"
 assert manifest["interface"]["displayName"] == "Autoworker for Codex CLI"
 plugins = marketplace["plugins"]
 assert len(plugins) == 1

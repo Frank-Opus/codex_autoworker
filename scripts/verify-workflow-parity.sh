@@ -32,11 +32,12 @@ copy_fixture() {
 
 seed_codex_surfaces() {
   local dest="$1"
-  mkdir -p "$dest/.agents" "$dest/.codex"
+  mkdir -p "$dest/.agents" "$dest/.codex" "$dest/scripts"
   cp "$ROOT/AGENTS.md" "$dest/AGENTS.md"
   cp -R "$ROOT/.agents/skills" "$dest/.agents/skills"
   cp "$ROOT/.codex/hooks.json" "$dest/.codex/hooks.json"
   cp -R "$ROOT/.codex/hooks" "$dest/.codex/hooks"
+  cp "$ROOT/scripts/autoworker_state.py" "$dest/scripts/autoworker_state.py"
   (
     cd "$dest"
     git init -q
@@ -52,16 +53,30 @@ run_codex_until() {
   local attempt
   local pid
 
+  terminate_exec() {
+    local target="$1"
+    pkill -TERM -P "$target" 2>/dev/null || true
+    kill -TERM "$target" 2>/dev/null || true
+    for _ in 1 2 3 4 5; do
+      if ! kill -0 "$target" 2>/dev/null; then
+        wait "$target" 2>/dev/null || true
+        return 0
+      fi
+      sleep 1
+    done
+    pkill -KILL -P "$target" 2>/dev/null || true
+    kill -KILL "$target" 2>/dev/null || true
+    wait "$target" 2>/dev/null || true
+  }
+
   for attempt in 1 2 3; do
     : >"$log"
     sh -c "codex exec --skip-git-repo-check --dangerously-bypass-approvals-and-sandbox --cd \"$workdir\" '$prompt'" >"$log" 2>&1 &
     pid=$!
 
     for ((elapsed = 0; elapsed < timeout_seconds; elapsed += 2)); do
-      if bash -lc "$condition"; then
-        pkill -TERM -P "$pid" 2>/dev/null || true
-        kill -TERM "$pid" 2>/dev/null || true
-        wait "$pid" 2>/dev/null || true
+      if bash -lc "$condition" >/dev/null 2>&1; then
+        terminate_exec "$pid"
         return 0
       fi
 
@@ -72,10 +87,8 @@ run_codex_until() {
       sleep 2
     done
 
-    if bash -lc "$condition"; then
-      pkill -TERM -P "$pid" 2>/dev/null || true
-      kill -TERM "$pid" 2>/dev/null || true
-      wait "$pid" 2>/dev/null || true
+    if bash -lc "$condition" >/dev/null 2>&1; then
+      terminate_exec "$pid"
       return 0
     fi
 
@@ -122,6 +135,7 @@ require_file "$ROOT/AGENTS.md"
 require_file "$ROOT/.codex/hooks.json"
 require_file "$ROOT/.codex/hooks/session_start_context.py"
 require_file "$ROOT/.codex/hooks/stop_persist_state.py"
+require_file "$ROOT/scripts/autoworker_state.py"
 
 PLAN_WS="$RUN_DIR/plan"
 EXEC_WS="$RUN_DIR/exec"
@@ -130,6 +144,7 @@ RECOVERY_WS="$RUN_DIR/recovery"
 copy_fixture "$PLAN_WS"
 seed_codex_surfaces "$PLAN_WS"
 run_codex_until "$PLAN_WS" "$RUN_DIR/plan.log" 'Use $deep-plan for this tiny Python workspace. The implementation task is to change the default greeting to "Hello, Codex!" while keeping `greeting("Alice")` unchanged and updating the regression expectation accordingly. Planning inputs are already decided: main reason = regression sync plus CLI polish; exact scope = only the default greeting path plus the matching regression expectation; downside if skipped = wrong default output and misleading verification coverage. Do not ask follow-up questions. For this planning run, write `task_plan.md` only and do not modify source files.' "[ -f \"$PLAN_WS/task_plan.md\" ]"
+! grep -q 'hook: SessionStart Failed' "$RUN_DIR/plan.log"
 python3 - "$PLAN_WS" <<'PY'
 from pathlib import Path
 import sys
@@ -145,12 +160,29 @@ assert 'Hello, Codex!' not in (workdir / 'app.py').read_text()
 assert (workdir / 'test_app.py').read_text().count('Hello, world!') == 1
 assert not list(workdir.glob('subtask_*.md'))
 PY
+python3 - "$ROOT" "$PLAN_WS" <<'PY'
+import json
+import subprocess
+import sys
+root = sys.argv[1]
+workdir = sys.argv[2]
+payload = json.loads(subprocess.check_output([
+    "python3",
+    f"{root}/scripts/autoworker_state.py",
+    "--root",
+    workdir,
+    "--json",
+], text=True))
+assert payload["next_command"] == "$subtask-init"
+assert payload["active_subtask_count"] == 0
+PY
 
 copy_fixture "$EXEC_WS"
 seed_codex_surfaces "$EXEC_WS"
 cp "$PLAN_WS/task_plan.md" "$EXEC_WS/task_plan.md"
 run_codex_until "$EXEC_WS" "$RUN_DIR/exec-init.log" '$subtask-init Use the existing `task_plan.md` in this directory. Create or update the active subtask, record assumption verification, and stop before any code changes.' "python3 - <<'PY'
 from pathlib import Path
+import re
 workdir = Path('$EXEC_WS')
 files = list(workdir.glob('subtask_*.md'))
 if len(files) != 1:
@@ -160,10 +192,33 @@ assert 'status: active' in text
 assert '## Core Assumptions' in text
 assert '## Verification Plan' in text
 assert '| Result |' in text
+section = text.split('## Core Assumptions', 1)[1].split('## Design Decisions', 1)[0]
+rows = re.findall(r'^\| .* \| .* \| (.*) \|$', section, flags=re.M)
+assert rows, 'expected assumption rows'
+assert all(cell.strip() for cell in rows), 'subtask-init results are incomplete'
 PY"
+! grep -q 'hook: SessionStart Failed' "$RUN_DIR/exec-init.log"
 EXEC_SUBTASK=$(active_subtask "$EXEC_WS")
+python3 - "$ROOT" "$EXEC_WS" <<'PY'
+import json
+import subprocess
+import sys
+root = sys.argv[1]
+workdir = sys.argv[2]
+payload = json.loads(subprocess.check_output([
+    "python3",
+    f"{root}/scripts/autoworker_state.py",
+    "--root",
+    workdir,
+    "--write-state",
+    "--json",
+], text=True))
+assert payload["next_command"] == "$dispatch"
+assert payload["active_subtask_count"] == 1
+PY
 python3 - "$EXEC_WS" "$EXEC_SUBTASK" <<'PY'
 from pathlib import Path
+import re
 import sys
 workdir = Path(sys.argv[1])
 subtask = Path(sys.argv[2])
@@ -171,6 +226,10 @@ text = subtask.read_text()
 assert 'status: active' in text
 assert '## Core Assumptions' in text
 assert '## Verification Plan' in text
+section = text.split('## Core Assumptions', 1)[1].split('## Design Decisions', 1)[0]
+rows = re.findall(r'^\| .* \| .* \| (.*) \|$', section, flags=re.M)
+assert rows
+assert all(cell.strip() for cell in rows)
 assert 'Hello, world!' in (workdir / 'app.py').read_text()
 assert 'Hello, Codex!' not in (workdir / 'app.py').read_text()
 PY
@@ -180,9 +239,14 @@ subtask = Path('$EXEC_SUBTASK')
 text = subtask.read_text()
 assert '### Upstream Verification Traceability' in text
 assert '### L1 Build' in text
+assert '### Verification Coverage' in text
 assert '### L4 End-to-End' in text
 assert '### Acceptance Criteria Coverage Check' in text
+assert '- [ ] Step 1.1:' in text
+assert '- [ ] L1.1:' in text
+assert '- [ ] L4.1:' in text
 PY" 420
+! grep -q 'hook: SessionStart Failed' "$RUN_DIR/exec-plan.log"
 python3 - "$EXEC_WS" "$EXEC_SUBTASK" <<'PY'
 from pathlib import Path
 import sys
@@ -191,8 +255,12 @@ subtask = Path(sys.argv[2])
 text = subtask.read_text()
 assert '### Upstream Verification Traceability' in text
 assert '### L1 Build' in text
+assert '### Verification Coverage' in text
 assert '### L4 End-to-End' in text
 assert '### Acceptance Criteria Coverage Check' in text
+assert '- [ ] Step 1.1:' in text
+assert '- [ ] L1.1:' in text
+assert '- [ ] L4.1:' in text
 assert 'Hello, world!' in (workdir / 'app.py').read_text()
 assert 'Hello, Codex!' not in (workdir / 'app.py').read_text()
 PY
@@ -200,22 +268,43 @@ run_codex_until "$EXEC_WS" "$RUN_DIR/exec-dispatch.log" '$dispatch Resume from t
 from pathlib import Path
 subtask = Path('$EXEC_SUBTASK')
 text = subtask.read_text()
-assert 'status: completed' in text
 assert 'Gate result: PASS' in text
 PY" 480
+! grep -q 'hook: SessionStart Failed' "$RUN_DIR/exec-dispatch.log"
 python3 - "$EXEC_WS" "$EXEC_SUBTASK" <<'PY'
 from pathlib import Path
 import sys
 workdir = Path(sys.argv[1])
 subtask = Path(sys.argv[2])
 text = subtask.read_text()
-assert 'status: completed' in text
 assert 'Gate result: PASS' in text
 assert '### L4' in text
 assert 'Hello, Codex!' in (workdir / 'app.py').read_text()
 assert 'Hello, Codex!' in (workdir / 'test_app.py').read_text()
 assert 'tests-ok' in text
 assert 'Hello, Alice!' in text
+PY
+python3 - "$ROOT" "$EXEC_WS" <<'PY'
+import json
+import subprocess
+import sys
+from pathlib import Path
+root = sys.argv[1]
+workdir = Path(sys.argv[2])
+payload = json.loads(subprocess.check_output([
+    "python3",
+    f"{root}/scripts/autoworker_state.py",
+    "--root",
+    str(workdir),
+    "--write-state",
+    "--json",
+], text=True))
+assert payload["next_command"] == "$autoworker"
+assert payload["active_subtask_count"] == 0
+snapshot = workdir / ".local" / "autoworker" / "state.json"
+assert snapshot.exists()
+saved = json.loads(snapshot.read_text())
+assert saved["next_command"] == "$autoworker"
 PY
 
 copy_fixture "$RECOVERY_WS"
@@ -245,27 +334,58 @@ assert 'Hello, Codex!' in (workdir / 'test_app.py').read_text()
 assert 'status: active' in text
 assert '### Upstream Verification Traceability' in text
 PY
+python3 - "$ROOT" "$RECOVERY_WS" <<'PY'
+import json
+import subprocess
+import sys
+root = sys.argv[1]
+workdir = sys.argv[2]
+payload = json.loads(subprocess.check_output([
+    "python3",
+    f"{root}/scripts/autoworker_state.py",
+    "--root",
+    workdir,
+    "--json",
+], text=True))
+assert payload["next_command"] == "$dispatch"
+assert payload["active_subtask_count"] == 1
+PY
 run_codex_until "$RECOVERY_WS" "$RUN_DIR/recovery-dispatch.log" '$dispatch Resume from the active subtask and continue autonomously until the workflow reaches terminal PASS state.' "python3 - <<'PY'
 from pathlib import Path
 workdir = Path('$RECOVERY_WS')
 subtask = Path('$RECOVERY_SUBTASK')
 text = subtask.read_text()
-assert 'status: completed' in text
 assert 'Gate result: PASS' in text
 assert 'Hello, Codex!' in (workdir / 'app.py').read_text()
 PY" 480
+! grep -q 'hook: SessionStart Failed' "$RUN_DIR/recovery-dispatch.log"
 python3 - "$RECOVERY_WS" "$RECOVERY_SUBTASK" <<'PY'
 from pathlib import Path
 import sys
 workdir = Path(sys.argv[1])
 subtask = Path(sys.argv[2])
 text = subtask.read_text()
-assert 'status: completed' in text
 assert 'Gate result: PASS' in text
 assert 'Hello, Codex!' in (workdir / 'app.py').read_text(), 'recovery run did not repair app.py'
 assert 'Hello, Codex!' in (workdir / 'test_app.py').read_text()
 assert 'tests-ok' in text
 assert 'Hello, Alice!' in text
+PY
+python3 - "$ROOT" "$RECOVERY_WS" <<'PY'
+import json
+import subprocess
+import sys
+root = sys.argv[1]
+workdir = sys.argv[2]
+payload = json.loads(subprocess.check_output([
+    "python3",
+    f"{root}/scripts/autoworker_state.py",
+    "--root",
+    workdir,
+    "--json",
+], text=True))
+assert payload["next_command"] == "$autoworker"
+assert payload["active_subtask_count"] == 0
 PY
 
 printf 'workflow-parity-ok\n'

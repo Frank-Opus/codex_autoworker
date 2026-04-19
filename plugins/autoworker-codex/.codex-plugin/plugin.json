@@ -1,13 +1,13 @@
 {
   "name": "autoworker-codex",
-  "version": "0.1.0",
-  "description": "Codex-first Autoworker workflow with evidence-based execution gates.",
+  "version": "0.2.0",
+  "description": "Autonomous Codex workflow with durable state, evidence-based execution gates, and long-run resume support.",
   "author": {
-    "name": "phj128",
-    "url": "https://github.com/phj128"
+    "name": "Frank-Opus",
+    "url": "https://github.com/Frank-Opus"
   },
-  "homepage": "https://github.com/phj128/autoworker",
-  "repository": "https://github.com/phj128/autoworker",
+  "homepage": "https://github.com/Frank-Opus/codex_autoworker",
+  "repository": "https://github.com/Frank-Opus/codex_autoworker",
   "license": "MIT",
   "keywords": [
     "codex",
@@ -18,9 +18,9 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Autoworker for Codex CLI",
-    "shortDescription": "Evidence-first coding workflow for Codex.",
-    "longDescription": "Runs the Autoworker plan -> dispatch -> code/test -> gate loop as a Codex-first workflow package.",
-    "developerName": "phj128",
+    "shortDescription": "Autonomous evidence-first workflow for Codex.",
+    "longDescription": "Runs the Autoworker plan -> dispatch -> code/test -> gate loop with durable on-disk state and long-run resume support for Codex.",
+    "developerName": "Frank-Opus",
     "category": "Productivity",
     "capabilities": [
       "Interactive",
@@ -28,9 +28,9 @@
     ],
     "websiteURL": "https://github.com/phj128/autoworker",
     "defaultPrompt": [
-      "Use $autoworker to finish this feature with real verification.",
+      "Use $autoworker to finish this feature autonomously with real verification.",
       "Use $deep-plan, then start execution from task_plan.md.",
-      "Resume the active subtask with $dispatch."
+      "Resume the active subtask with $dispatch and inspect state with python3 scripts/autoworker_state.py --write-state."
     ],
     "brandColor": "#1E6F5C"
   }

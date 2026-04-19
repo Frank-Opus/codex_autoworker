@@ -4,6 +4,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+
+from autoworker_state import build_state, persist_state  # noqa: E402
+
 
 def repo_root_from(payload: dict) -> Path:
     cwd = payload.get("cwd") or "."
@@ -26,7 +30,11 @@ def active_subtasks(root: Path) -> list[Path]:
         if path.name == "subtask_template.md":
             continue
         text = path.read_text(encoding="utf-8", errors="ignore")
-        if "status: paused" in text or "status: completed" in text:
+        if (
+            "status: paused" in text
+            or "status: completed" in text
+            or "Gate result: PASS" in text
+        ):
             continue
         paths.append(path)
     return paths
@@ -35,6 +43,8 @@ def active_subtasks(root: Path) -> list[Path]:
 def main() -> int:
     payload = json.load(sys.stdin)
     root = repo_root_from(payload)
+    state = build_state(root)
+    persist_state(state)
     subtasks = active_subtasks(root)
 
     message = None
@@ -44,8 +54,14 @@ def main() -> int:
             names = ", ".join(path.name for path in subtasks)
             message = (
                 f"Autoworker active subtask detected ({names}). Persist any new plan decisions, "
-                "test evidence, and findings to disk before ending the turn."
+                "test evidence, and findings to disk before ending the turn. "
+                f"Recommended next command remains {state['next_command']}."
             )
+    elif state["task_plan_exists"]:
+        message = (
+            "Autoworker task_plan.md exists without an active subtask. "
+            f"Persisted workflow snapshot refreshed; next command is {state['next_command']}."
+        )
 
     response = {"continue": True}
     if message:

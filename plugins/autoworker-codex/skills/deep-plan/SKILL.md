@@ -12,6 +12,31 @@ Invoke immediately after entering Plan Mode. Ensures discussion depth through 5 
 
 **Core idea**: Plan depth determines the quality ceiling of the execution chain. $subtask-init **extracts** from the plan file, $subtask-plan **derives** the verification plan from it. If the discussion is shallow, the entire chain — no matter how well-structured — is verifying an insufficiently thought-through solution.
 
+## Autonomous Planning Fast-Path
+
+Use a non-interactive path when the current prompt already supplies the planning inputs and explicitly asks you not to ask follow-up questions.
+
+This fast-path is allowed only when all of the following are true:
+
+1. the task scope is explicit
+2. the motivation or consequence of not doing it is explicit
+3. the key constraints are explicit
+4. the acceptance target is explicit enough to derive L1-L4 checks
+5. the prompt says not to ask follow-up questions, or the workflow is clearly running in autonomous verification mode
+
+When those conditions hold:
+
+- do the same five phases internally instead of interactively
+- verify assumptions by reading code and running lightweight commands where useful
+- write the full `task_plan.md`
+- output the usual planning summary
+- immediately call `finish planning discussion`
+- do **not** ask the user follow-up questions during this mode
+
+Do **not** use the fast-path when requirements are ambiguous. In that case, stay interactive.
+
+**Priority rule**: When the prompt explicitly says not to ask follow-up questions and also supplies the planning inputs, the fast-path overrides the default "ask the user" behavior everywhere else in this skill.
+
 ## Execution Flow
 
 ### Phase 1: Motivation Exploration
@@ -21,6 +46,8 @@ Invoke immediately after entering Plan Mode. Ensures discussion depth through 5 
 **Pre-action**: Check if the project has a `task_plan.md`. If so, read the overall goals and phase list; subsequent questioning should address the relationship to the overall plan.
 
 **Questioning approach** (use ask the user, 2-3 questions per round):
+
+If the autonomous fast-path is active, replace the questions below with concise written motivation conclusions derived from the provided prompt.
 
 1. **Why do this?** Do not accept tautological answers like "because we need X". Probe to root causes at the business/experience/efficiency level.
 2. **Relationship to overall goal?** (when task_plan exists) Which phase does this correspond to? Is it planned or ad-hoc? If ad-hoc, why is it higher priority than planned phases?
@@ -63,6 +90,8 @@ Invoke immediately after entering Plan Mode. Ensures discussion depth through 5 
 
 **Depth gate**: Each assumption either has a verification method (one-line command) or is flagged as risk ("cannot pre-verify, monitor during execution"). For behavior-affecting work, at least one assumption verification method should exercise the current runtime path rather than only reading files.
 
+If the autonomous fast-path is active, write the challenged assumptions directly instead of asking for them.
+
 ---
 
 ### Phase 3: Solution Derivation
@@ -74,6 +103,8 @@ Invoke immediately after entering Plan Mode. Ensures discussion depth through 5 
 1. **Start from motivation**: What's the minimum-change solution to the problem confirmed in Phase 1?
 2. **At least 1 alternative**: What are the trade-offs of different approaches?
 3. **Use ask the user for user to choose**: Present solution comparison, let user decide based on trade-offs
+
+If the autonomous fast-path is active, make the choice yourself from the supplied constraints and document the reason explicitly in the plan.
 
 **Solution review — four questions** (any unsatisfactory → redesign):
 
@@ -91,6 +122,8 @@ Invoke immediately after entering Plan Mode. Ensures discussion depth through 5 
 **Goal**: Define how to judge "done", giving the execution phase clear expectations.
 
 **Steps** (ask the user):
+
+If the autonomous fast-path is active, derive the acceptance criteria directly from the supplied requirements and convert them into measurable L1-L4 checks.
 
 1. **Categorized discussion**:
    - **Quantitative** (data precision, performance, coverage): specific values + tolerance
@@ -179,7 +212,7 @@ Then immediately call `finish planning discussion`.
 - **Each Phase has a depth gate**: Can't pass = don't proceed to next Phase, return to current one
 - **Don't skip Phases**: Even if the user gave very detailed requirements, still go through each (Phase 1-2 may be quick, but can't skip)
 - **Questioning is not adversarial**: The goal is to help the user think clearly, not to grill them. But "I agree with everything you said" is not good discussion
-- **Use ask the user**: Don't self-answer in your output — actually ask the user
+- **Use ask the user unless autonomous fast-path is active**: In the normal path, don't self-answer in your output — actually ask the user
 - **Explore code**: For assumptions/solutions involving existing code in Phase 2-3, use Glob/Grep/Read to actually confirm
 
 ## Forbidden

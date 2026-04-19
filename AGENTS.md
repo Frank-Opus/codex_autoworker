@@ -22,6 +22,7 @@ Primary workflow entry points:
 - `$deep-plan` when planning should happen explicitly before execution
 - `$subtask-init` when a written plan already exists and execution should start now
 - `$dispatch` when resuming an active `subtask_*.md`
+- `python3 scripts/autoworker_state.py --json --write-state` when you need the canonical on-disk workflow snapshot
 
 Useful tools:
 - `rg` for fast repo discovery
@@ -48,6 +49,7 @@ Avoid frontmatter-compatibility assumptions. Map each Claude-specific feature to
 Repo-native validation commands:
 - `./scripts/verify-hooks.sh` checks repo-local hook wiring and nested-directory path safety
 - `./scripts/verify-codex-workspace.sh` performs a real `codex exec` visibility check against `AGENTS.md` and `.agents/skills/`
+- `./scripts/verify-autonomy-surface.sh` checks the durable state snapshot plus hook-driven resume guidance
 
 ## GSD Workflow Enforcement
 
